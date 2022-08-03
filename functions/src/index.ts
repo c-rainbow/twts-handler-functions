@@ -1,6 +1,5 @@
 import * as functions from "firebase-functions";
 //import {handler} from "./handler";
-import { verifyHandler } from "./verify";
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -20,6 +19,6 @@ import { verifyHandler } from "./verify";
     .https.onRequest(handler);
 */
 
-export const verify = functions.https.onRequest(verifyHandler);
+export const verify = functions.https.onRequest(() => {});
 
 // export const path1 = functions.region(REGION).https.onRequest(handler2);
