@@ -1,5 +1,5 @@
 import * as functions from "firebase-functions";
-//import {handler} from "./handler";
+import { webhookHandler } from "./webhookHandler";
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -18,7 +18,6 @@ import * as functions from "firebase-functions";
     .runWith({secrets: ["THIS_IS_SECRET"]})
     .https.onRequest(handler);
 */
-
-export const verify = functions.https.onRequest(() => {});
+export const webhook = functions.https.onRequest(webhookHandler);
 
 // export const path1 = functions.region(REGION).https.onRequest(handler2);
