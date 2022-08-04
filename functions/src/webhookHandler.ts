@@ -1,4 +1,5 @@
 import * as functions from "firebase-functions";
+import { handleNewFollower } from "./followHandler";
 import { getHeaderValue } from "./utils";
 import { verifySignature } from "./verifySignature";
 
@@ -14,9 +15,8 @@ const ALL_MESSAGE_TYPES = [
 ];
 
 
-export const webhookHandler = (
-    req: functions.https.Request,
-    res: functions.Response<string>) => {
+export async function webhookHandler(
+  req: functions.https.Request, res: functions.Response<string>) {
   
   // Check 1. Only allow POST requests
   if (req.method !== 'POST') {
@@ -41,13 +41,14 @@ export const webhookHandler = (
   switch (messageType) {
     case MESSAGE_TYPE_NOTIFICATION:
       // TODO: Store the information in Firestore
-      res.sendStatus(200);
+      const responseCode = await handleNewFollower(req.body);
+      res.sendStatus(responseCode);
       return;
     case MESSAGE_TYPE_VERIFICATION:
       /**
        * TODO: More verification logic.
        * For now, just return 200. This is highly likely a valid message from Twitch
-       * because the message signature matches.
+       * because the message signature already matches.
        */
       // The default header is text/html.
       res.setHeader('content-type', 'text/plain').send(req.body.challenge);
@@ -57,4 +58,6 @@ export const webhookHandler = (
       res.sendStatus(204);
       return;
   }
+
+  throw new Error('You shouldnt reach here');
 };
