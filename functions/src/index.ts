@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
-import {webhookHandler} from './webhookHandler';
+import { recentFollowHandler } from './getRecentFollowers';
+import { webhookHandler } from './webhookHandler';
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -17,5 +18,7 @@ import {webhookHandler} from './webhookHandler';
     .https.onRequest(handler);
 */
 export const webhook = functions.https.onRequest(webhookHandler);
+
+export const recentFollowers = functions.https.onRequest(recentFollowHandler);
 
 // export const path1 = functions.region(REGION).https.onRequest(handler2);

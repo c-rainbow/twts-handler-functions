@@ -52,8 +52,6 @@ export async function handleNewFollower(body: EventSubBody): Promise<number> {
     return 403;
   }
 
-  const documentId = body.subscription?.id;
-
   const followerId = body.event?.user_id;
   const followerLogin = body.event?.user_login;
   const followerDisplayName = body.event?.user_name;
@@ -62,15 +60,16 @@ export async function handleNewFollower(body: EventSubBody): Promise<number> {
   const streamerLogin = body.event?.broadcaster_user_login;
   const streamerDisplayName = body.event?.broadcaster_user_name;
 
-  if (!documentId || !body.event?.followed_at ||
-    !followerId || !followerLogin || !followerDisplayName ||
-    !streamerId || !streamerLogin || !streamerDisplayName) {
+  if (!followerId || !followerLogin || !followerDisplayName ||
+      !streamerId || !streamerLogin || !streamerDisplayName ||
+      !body.event?.followed_at) {
     throw new Error(
         'EventSub notification is missing one or more required fields');
   }
 
   // This should come after null check
   const timestampInMs = Date.parse(body.event?.followed_at);
+  const documentId = `${followerId}_${streamerId}`;
 
   // Save the follower data in Firestore.
   // NOTE: If Twitch sends a webhook message multiple times for the same follow notification,
