@@ -1,3 +1,4 @@
+
 import * as functions from 'firebase-functions';
 import { recentFollowHandler } from './getRecentFollowers';
 import { webhookHandler } from './webhookHandler';
@@ -5,7 +6,6 @@ import { webhookHandler } from './webhookHandler';
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
 //
-
 
 // const REGION = "us-central1";
 
@@ -19,6 +19,8 @@ import { webhookHandler } from './webhookHandler';
 */
 export const webhook = functions.https.onRequest(webhookHandler);
 
-export const recentFollowers = functions.https.onRequest(recentFollowHandler);
+export const recentFollowers = functions.runWith({
+    secrets: ['TWITCH_CLIENT_ID', 'TWITCH_CLIENT_SECRET']
+}).https.onRequest(recentFollowHandler);
 
 // export const path1 = functions.region(REGION).https.onRequest(handler2);

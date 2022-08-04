@@ -1,6 +1,5 @@
 import * as functions from 'firebase-functions';
-
-import {initializeApp} from 'firebase-admin/app';
+import { initializeApp, getApps } from 'firebase-admin/app';
 import {getFirestore, Timestamp} from 'firebase-admin/firestore';
 
 type AllowedTypes = 'channel.follow';
@@ -35,8 +34,11 @@ export interface EventSubBody {
 }
 
 
+if (!getApps().length) {
+  initializeApp();
+}
+
 // Initialize outside of the handler function
-initializeApp();
 const db = getFirestore();
 const followersRef = db.collection('followers');
 
