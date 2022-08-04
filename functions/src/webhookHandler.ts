@@ -1,7 +1,7 @@
-import * as functions from "firebase-functions";
-import { handleNewFollower } from "./followHandler";
-import { getHeaderValue } from "./utils";
-import { verifySignature } from "./verifySignature";
+import * as functions from 'firebase-functions';
+import {handleNewFollower} from './followHandler';
+import {getHeaderValue} from './utils';
+import {verifySignature} from './verifySignature';
 
 
 const MESSAGE_TYPE = 'Twitch-Eventsub-Message-Type'.toLowerCase();
@@ -16,8 +16,7 @@ const ALL_MESSAGE_TYPES = [
 
 
 export async function webhookHandler(
-  req: functions.https.Request, res: functions.Response<string>) {
-  
+    req: functions.https.Request, res: functions.Response<string>) {
   // Check 1. Only allow POST requests
   if (req.method !== 'POST') {
     res.sendStatus(405);
@@ -31,27 +30,28 @@ export async function webhookHandler(
     res.sendStatus(403);
     return;
   }
-  
+
   // Check 3. Match signature from Twitch
   if (!verifySignature(req)) {
     res.sendStatus(403);
     return;
   }
 
+  const reqBody = req.body;
   switch (messageType) {
     case MESSAGE_TYPE_NOTIFICATION:
       // TODO: Store the information in Firestore
-      const responseCode = await handleNewFollower(req.body);
-      res.sendStatus(responseCode);
+      // const responseCode = await handleNewFollower(reqBody);
+      res.sendStatus(await handleNewFollower(reqBody));
       return;
     case MESSAGE_TYPE_VERIFICATION:
       /**
        * TODO: More verification logic.
-       * For now, just return 200. This is highly likely a valid message from Twitch
+       * For now, just return 200. This is likely a valid message from Twitch
        * because the message signature already matches.
        */
       // The default header is text/html.
-      res.setHeader('content-type', 'text/plain').send(req.body.challenge);
+      res.setHeader('content-type', 'text/plain').send(reqBody.challenge);
       return;
     case MESSAGE_TYPE_REVOCATION:
       functions.logger.info('EventSub subscription is revoked.');
@@ -60,4 +60,4 @@ export async function webhookHandler(
   }
 
   throw new Error('You shouldnt reach here');
-};
+}

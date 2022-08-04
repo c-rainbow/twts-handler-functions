@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
-import * as functions from "firebase-functions";
-import { getHeaderValue } from './utils';
+import * as functions from 'firebase-functions';
+import {getHeaderValue} from './utils';
 
 
 // Notification request headers
@@ -51,4 +51,4 @@ export function verifySignature(request: functions.https.Request) {
   const hmac = `sha256=${getHmac(secret, hmacMessage)}`;
 
   return areEqualMessages(hmac, twitchMessageSignature);
-};
+}
