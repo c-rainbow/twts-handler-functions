@@ -1,4 +1,6 @@
-export function getHeaderValue(input: string | string[] | undefined): string | null {
+export function getHeaderValue(
+  input: string | string[] | undefined
+): string | null {
   if (typeof input === 'string') {
     return input;
   }

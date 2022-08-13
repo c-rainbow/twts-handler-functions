@@ -1,4 +1,3 @@
-
 import * as functions from 'firebase-functions';
 import { recentFollowHandler } from './getRecentFollowers';
 import { webhookHandler } from './webhookHandler';
@@ -7,20 +6,16 @@ import { webhookHandler } from './webhookHandler';
 // // https://firebase.google.com/docs/functions/typescript
 //
 
-// const REGION = "us-central1";
-
-
-// const REGION = process.env.CLOUD_FUNCTION_REGION;
-
-/* export const helloWorld = functions
-    .region(REGION)
-    .runWith({secrets: ["THIS_IS_SECRET"]})
-    .https.onRequest(handler);
-*/
 export const webhook = functions.https.onRequest(webhookHandler);
 
-export const recentFollowers = functions.runWith({
-    secrets: ['TWITCH_CLIENT_ID', 'TWITCH_CLIENT_SECRET']
-}).https.onRequest(recentFollowHandler);
+export const recentFollowers = functions
+  .runWith({
+    secrets: [
+      'TWITCH_CLIENT_ID',
+      'TWITCH_CLIENT_SECRET',
+      'TWITCH_EVENTSUB_SECRET',
+    ],
+  })
+  .https.onRequest(recentFollowHandler);
 
 // export const path1 = functions.region(REGION).https.onRequest(handler2);

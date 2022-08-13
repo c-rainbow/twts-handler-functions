@@ -25,7 +25,10 @@ module.exports = {
     "import",
   ],
   rules: {
-    "quotes": ["error", "double"],
+    "require-jsdoc": 0,
+    "max-len": 1,
+    "valid-jsdoc": 1,
+    "quotes": ["error", "single"],
     "import/no-unresolved": 0,
   },
 };

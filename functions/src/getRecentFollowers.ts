@@ -16,26 +16,28 @@ if (!clientId || !clientSecret) {
 }
 */
 
-const authProvider = new ClientCredentialsAuthProvider(clientId!, clientSecret!);
+const authProvider = new ClientCredentialsAuthProvider(
+  clientId!,
+  clientSecret!
+);
 const apiClient = new ApiClient({ authProvider });
-
-
 
 // Initialize outside of the handler function
 if (!getApps().length) {
   initializeApp();
 }
-//const db = getFirestore();
-//const followersRef = db.collection('followers');
+// const db = getFirestore();
+// const followersRef = db.collection('followers');
 
 /**
  *
  * @param body body of POST request from EventSub
  * @returns
  */
- export async function recentFollowHandler(
-  req: functions.https.Request, res: functions.Response<string>) {
-
+export async function recentFollowHandler(
+  req: functions.https.Request,
+  res: functions.Response<string>
+) {
   // Check 1. Only allow POST requests
   /*
   if (req.method !== 'POST') {
@@ -45,7 +47,7 @@ if (!getApps().length) {
   */
 
   // Check 2. Channel ID to download follower
-  const channelId = '403883450';//req.body.channelId as string;
+  const channelId = '403883450'; //req.body.channelId as string;
   if (!channelId) {
     res.status(403).send('Channel ID is required');
     return;
@@ -53,9 +55,17 @@ if (!getApps().length) {
 
   const db = getFirestore();
   const followersRef = db.collection('followers');
-  const response = await apiClient.users.getFollows({ followedUser: channelId, limit: 10 });
+  const response = await apiClient.users.getFollows({
+    followedUser: channelId,
+    limit: 20,
+  });
   for (const follower of response.data) {
-    functions.logger.info('follower: ', follower.followDate, follower.followedUserDisplayName, follower.userDisplayName);
+    functions.logger.info(
+      'follower: ',
+      follower.followDate,
+      follower.followedUserDisplayName,
+      follower.userDisplayName
+    );
     await followersRef.add({
       followerDisplayName: follower.userDisplayName,
       followerId: follower.userId,
@@ -63,7 +73,7 @@ if (!getApps().length) {
       streamerDisplayName: follower.followedUserDisplayName,
       streamerId: follower.followedUserId,
       streamerLogin: follower.followedUserName,
-      timestamp: follower.followDate
+      timestamp: follower.followDate,
     });
   }
 

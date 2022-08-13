@@ -1,8 +1,7 @@
 import * as functions from 'firebase-functions';
-import {handleNewFollower} from './followHandler';
-import {getHeaderValue} from './utils';
-import {verifySignature} from './verifySignature';
-
+import { handleNewFollower } from './followHandler';
+import { getHeaderValue } from './utils';
+import { verifySignature } from './verifySignature';
 
 const MESSAGE_TYPE = 'Twitch-Eventsub-Message-Type'.toLowerCase();
 const MESSAGE_TYPE_NOTIFICATION = 'notification';
@@ -14,9 +13,10 @@ const ALL_MESSAGE_TYPES = [
   MESSAGE_TYPE_REVOCATION,
 ];
 
-
 export async function webhookHandler(
-    req: functions.https.Request, res: functions.Response<string>) {
+  req: functions.https.Request,
+  res: functions.Response<string>
+) {
   // Check 1. Only allow POST requests
   if (req.method !== 'POST') {
     res.sendStatus(405);

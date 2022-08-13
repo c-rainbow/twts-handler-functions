@@ -1,8 +1,9 @@
 import * as functions from 'firebase-functions';
 import { initializeApp, getApps } from 'firebase-admin/app';
-import {getFirestore, Timestamp} from 'firebase-admin/firestore';
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 
 type AllowedTypes = 'channel.follow';
+
 /**
  * Make all fields optional.
  */
@@ -21,18 +22,17 @@ export interface EventSubBody {
     };
     created_at?: string; // Timestamp string
     cost?: number;
-  }
+  };
   event?: {
     user_id?: string; // Channel ID of the follower
     user_login?: string; // User login of the follower
-    user_name?: string, // Display name of the follower
+    user_name?: string; // Display name of the follower
     broadcaster_user_id?: string; // Channel ID of the streamer
     broadcaster_user_login?: string; // User login of the streamer
     broadcaster_user_name?: string; // Display name of the streamer
     followed_at?: string; // Timestamp string
-  }
+  };
 }
-
 
 if (!getApps().length) {
   initializeApp();
@@ -43,14 +43,16 @@ const db = getFirestore();
 const followersRef = db.collection('followers');
 
 /**
- *
+ * New follower webhook handler
  * @param body body of POST request from EventSub
- * @returns
+ * @return 204 status code
  */
 export async function handleNewFollower(body: EventSubBody): Promise<number> {
   if (body?.subscription?.type !== 'channel.follow') {
     functions.logger.error(
-        'Unrecognized subscription type', body?.subscription?.type);
+      'Unrecognized subscription type',
+      body?.subscription?.type
+    );
     return 403;
   }
 
@@ -62,11 +64,18 @@ export async function handleNewFollower(body: EventSubBody): Promise<number> {
   const streamerLogin = body.event?.broadcaster_user_login;
   const streamerDisplayName = body.event?.broadcaster_user_name;
 
-  if (!followerId || !followerLogin || !followerDisplayName ||
-      !streamerId || !streamerLogin || !streamerDisplayName ||
-      !body.event?.followed_at) {
+  if (
+    !followerId ||
+    !followerLogin ||
+    !followerDisplayName ||
+    !streamerId ||
+    !streamerLogin ||
+    !streamerDisplayName ||
+    !body.event?.followed_at
+  ) {
     throw new Error(
-        'EventSub notification is missing one or more required fields');
+      'EventSub notification is missing one or more required fields'
+    );
   }
 
   // This should come after null check
@@ -74,11 +83,12 @@ export async function handleNewFollower(body: EventSubBody): Promise<number> {
   const documentId = `${followerId}_${streamerId}`;
 
   // Save the follower data in Firestore.
-  // NOTE: If Twitch sends a webhook message multiple times for the same follow notification,
-  // the notifications will have the same message ID. Firestore will replace the document with
-  // the new one, but since they are identical, there will be no effect.
-  // The original documents are replaced rarely and therefore it's cheaper than checking
-  // for existing ones before setting the new one for every new folloer.
+  // NOTE: If Twitch sends a webhook message multiple times for the same
+  // follow notification, the notifications will have the same message ID.
+  // Firestore will replace the document with the new one, but since they
+  // are identical, there will be no effect. The original documents are
+  // replaced rarely and therefore it's cheaper than checking for existing
+  // ones before setting the new one for every new folloer.
   const doc = followersRef.doc(documentId);
   await doc.set({
     followerId,
@@ -90,8 +100,8 @@ export async function handleNewFollower(body: EventSubBody): Promise<number> {
     streamerDisplayName,
 
     timestamp: new Timestamp(
-        Math.round(timestampInMs/1000),
-        (timestampInMs % 1000) * 1_000_000
+      Math.round(timestampInMs / 1000),
+      (timestampInMs % 1000) * 1_000_000
     ),
   });
 
