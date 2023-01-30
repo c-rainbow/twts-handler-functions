@@ -39,15 +39,13 @@ export async function recentFollowHandler(
   res: functions.Response<string>
 ) {
   // Check 1. Only allow POST requests
-  /*
   if (req.method !== 'POST') {
     res.sendStatus(405);
     return;
   }
-  */
 
   // Check 2. Channel ID to download follower
-  const channelId = '403883450'; //req.body.channelId as string;
+  const channelId = req.body.channelId as string;
   if (!channelId) {
     res.status(403).send('Channel ID is required');
     return;
