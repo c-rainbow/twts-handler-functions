@@ -6,7 +6,13 @@ import { webhookHandler } from './webhookHandler';
 // // https://firebase.google.com/docs/functions/typescript
 //
 
-export const webhook = functions.https.onRequest(webhookHandler);
+export const webhook = functions
+  .runWith({
+    secrets: [
+      'TWITCH_EVENTSUB_SECRET',
+    ],
+  })
+  .https.onRequest(webhookHandler);
 
 export const recentFollowers = functions
   .runWith({
